@@ -78,11 +78,11 @@ const SearchPage = () => {
                               className="w-full h-full object-cover"
                             />
                           </AspectRatio>
-                          <div className="absolute top-2 left-2 bg-white dark:bg-gray-700 bg-opacity-75 rounded-lg px-3 py-1">
+                          {/* <div className="absolute top-2 left-2 bg-white dark:bg-gray-700 bg-opacity-75 rounded-lg px-3 py-1">
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                               Featured
                             </span>
-                          </div>
+                          </div> */}
                         </div>
                         <CardContent className="p-4">
                           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{restaurant.restaurantName}</h1>
