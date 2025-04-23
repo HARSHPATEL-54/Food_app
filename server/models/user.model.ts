@@ -3,7 +3,7 @@ import mongoose, { Document, Model } from "mongoose";
 export interface IUser {
     fullname:string;
     email:string;
-    password:string;
+    password?:string;
     contact:number;
     address:string;
     city:string;
@@ -15,7 +15,9 @@ export interface IUser {
     resetPasswordToken?:string;
     resetPasswordTokenExpiresAt?:Date;
     verificationToken?:string;
-    verificationTokenExpiresAt?:Date
+    verificationTokenExpiresAt?:Date;
+    googleId?:string;
+    authProvider?:string;
 }
 
 export interface IUserDocument extends IUser, Document {
@@ -34,7 +36,9 @@ const userSchema = new mongoose.Schema<IUserDocument>({
     },
     password: {
         type: String,
-        required: true
+        required: function() {
+            return !this.googleId; // Password is required only if not using Google OAuth
+        }
     },
     contact: {
         type: Number,
@@ -70,6 +74,12 @@ const userSchema = new mongoose.Schema<IUserDocument>({
     resetPasswordTokenExpiresAt:Date,
     verificationToken:String,
     verificationTokenExpiresAt:Date,
+    googleId: String,
+    authProvider: {
+        type: String,
+        enum: ['local', 'google'],
+        default: 'local'
+    },
 },{timestamps:true});
 
 export const User : Model<IUserDocument> = mongoose.model<IUserDocument>("User", userSchema);
