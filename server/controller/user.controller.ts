@@ -6,6 +6,7 @@ import cloudinary from "../utils/cloudinary";
 import { generateVerificationCode } from "../utils/generateVerificationCode";
 import { generateToken } from "../utils/generateToken";
 import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/email";
+import passport from '../utils/passport';
 
 // User Signup
 export const signup = async (req: Request, res: Response): Promise<void> => {
@@ -47,7 +48,23 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
 
-        if (!user || !(await bcrypt.compare(password, user.password))) {
+        if (!user) {
+            res.status(400).json({ success: false, message: "Incorrect email or password" });
+            return;
+        }
+
+        // Check if this is a Google OAuth user
+        if (user.authProvider === 'google') {
+            res.status(400).json({ 
+                success: false, 
+                message: "This account uses Google Sign-In. Please login with Google.",
+                isGoogleUser: true
+            });
+            return;
+        }
+
+        // For regular users, verify password
+        if (!user.password || !(await bcrypt.compare(password, user.password))) {
             res.status(400).json({ success: false, message: "Incorrect email or password" });
             return;
         }
@@ -194,4 +211,31 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
     }
+};
+
+// Google OAuth Login - This initiates the Google OAuth flow
+export const googleLogin = passport.authenticate('google', { scope: ['profile', 'email'] });
+
+// Google OAuth Callback - This is where Google redirects after authentication
+export const googleCallback = (req: Request, res: Response): void => {
+    passport.authenticate('google', { session: false }, async (err: Error, user: any) => {
+        if (err) {
+            return res.redirect(`${process.env.FRONTEND_URL}/login?error=Google authentication failed`);
+        }
+        
+        if (!user) {
+            return res.redirect(`${process.env.FRONTEND_URL}/login?error=User not found`);
+        }
+        
+        try {
+            // Generate JWT token
+            generateToken(res, user);
+            
+            // Redirect to frontend with success
+            res.redirect(`${process.env.FRONTEND_URL}?googleLoginSuccess=true`);
+        } catch (error) {
+            console.error('Error during Google authentication callback:', error);
+            res.redirect(`${process.env.FRONTEND_URL}/login?error=Authentication error`);
+        }
+    })(req, res);
 };
