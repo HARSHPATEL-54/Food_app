@@ -14,7 +14,8 @@ import Cart from './components/Cart'
 import Restaurant from './admin/Restaurant'
 import AddMenu from './admin/AddMenu'
 import Orders from './admin/Orders'
-import Success from './components/Success'
+import OrderStatus from "./components/OrderStatus";
+import UserOrders from "./components/UserOrders";
 import { useUserStore } from './store/useUserStore'
 import { useEffect } from 'react'
 import Loading from './components/Loading'
@@ -83,7 +84,11 @@ const appRouter = createBrowserRouter([{
     },
     {
       path: '/order/status',
-      element:<Success/>
+      element:<OrderStatus/>
+    },
+    {
+      path: '/orders',
+      element:<UserOrders/>
     },
     //admin from here
     {
