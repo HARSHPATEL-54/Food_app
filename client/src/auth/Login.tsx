@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import GoogleLogo from "@/components/GoogleLogo";
 import { LoginInputState, userLoginSchema } from "@/schema/userSchema";
 import { useUserStore } from "@/store/useUserStore";
 import { Loader2, LockKeyhole, Mail } from "lucide-react";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Login = () => {
   const [input, setInput] = useState<LoginInputState>({
@@ -13,8 +15,27 @@ const Login = () => {
     password: "",
   });
   const [errors, setErrors] = useState<Partial<LoginInputState>>({});
-  const { loading, login } = useUserStore();
+  const { loading, login, googleLogin, handleGoogleLoginSuccess } = useUserStore();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Check for Google login success or error
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const googleLoginSuccess = urlParams.get('googleLoginSuccess');
+    const error = urlParams.get('error');
+    
+    if (googleLoginSuccess === 'true') {
+      handleGoogleLoginSuccess();
+      navigate('/');
+    }
+    
+    if (error) {
+      toast.error(decodeURIComponent(error));
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [location, handleGoogleLoginSuccess, navigate]);
 
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -90,15 +111,27 @@ const Login = () => {
             </Button>
           )}
           <div className="mt-4">
-            {/* <Link
+            <Link
               to="/forgot-password"
               className="hover:text-blue-500 hover:underline"
             >
               Forgot Password
-            </Link> */}
+            </Link>
           </div>
         </div>
-        <Separator />
+        <Separator className="my-4" />
+        
+        <Button 
+          type="button" 
+          onClick={() => googleLogin()} 
+          className="w-full flex items-center justify-center bg-white hover:bg-gray-50 text-black border border-gray-300 py-2"
+        >
+          <GoogleLogo className="h-5 w-5 mr-2" />
+          Sign in with Google
+        </Button>
+        
+        <Separator className="my-4" />
+        
         <p className="mt-2">
           Don't have an account?{" "}
           <Link to="/signup" className="text-blue-500">
