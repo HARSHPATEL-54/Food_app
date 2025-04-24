@@ -113,7 +113,7 @@ const appRouter = createBrowserRouter([{
   element: <AuthenticatedUser><ForgotPassword /></AuthenticatedUser>,
 },
 {
-  path: 'reset-password',
+  path: 'reset-password/:token',
   element: <ResetPassword />
 },
 {
@@ -123,12 +123,22 @@ const appRouter = createBrowserRouter([{
 ])
 function App() {
   // const initializeTheme = useThemeStore((state:any) => state.initializeTheme);
-   const {checkAuthentication, isCheckingAuth} = useUserStore();
+   const {checkAuthentication, isCheckingAuth, handleGoogleLoginSuccess} = useUserStore();
+   
   // checking auth every time when page is loaded
    useEffect(()=>{
      checkAuthentication();
-  //   initializeTheme();
-  },[checkAuthentication])
+     
+     // Check if this is a redirect from Google OAuth
+     const urlParams = new URLSearchParams(window.location.search);
+     const googleLoginSuccess = urlParams.get('googleLoginSuccess');
+     
+     if (googleLoginSuccess === 'true') {
+       handleGoogleLoginSuccess();
+       // Clean up URL
+       window.history.replaceState({}, document.title, window.location.pathname);
+     }
+  },[checkAuthentication, handleGoogleLoginSuccess])
 
   if(isCheckingAuth) return <Loading/>
 
