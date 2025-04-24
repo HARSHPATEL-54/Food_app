@@ -69,3 +69,36 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom animations to replace framer-motion */
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-in-out forwards;
+  }
+
+  .animate-slideDown {
+    animation: slideDown 0.3s ease-in-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      height: 0;
+    }
+    to {
+      opacity: 1;
+      height: auto;
+    }
+  }
+}
