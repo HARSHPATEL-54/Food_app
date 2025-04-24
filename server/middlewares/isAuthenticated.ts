@@ -5,6 +5,7 @@ declare global {
     namespace Express {
         interface Request {
             id?: string;
+            admin?: boolean;
         }
     }
 }
@@ -35,6 +36,15 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
             
             // Set user ID and additional info from token if available
             req.id = decoded.userId;
+            
+            // Set admin flag if present in the token
+            if (decoded.isAdmin === true) {
+                (req as any).admin = true;
+                console.log(`Setting admin flag to true for user ${req.id}`);
+            } else {
+                (req as any).admin = false;
+                console.log(`User ${req.id} is not an admin`);
+            }
             
             // Continue to the next middleware
             next();

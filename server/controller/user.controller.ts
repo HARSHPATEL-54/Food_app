@@ -7,6 +7,7 @@ import { generateVerificationCode } from "../utils/generateVerificationCode";
 import { generateToken } from "../utils/generateToken";
 import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/email";
 import passport from '../utils/passport';
+import { Order } from "../models/order.model";
 
 // User Signup
 export const signup = async (req: Request, res: Response): Promise<void> => {
@@ -238,4 +239,31 @@ export const googleCallback = (req: Request, res: Response): void => {
             res.redirect(`${process.env.FRONTEND_URL}/login?error=Authentication error`);
         }
     })(req, res);
+};
+
+// Get All Orders for Admin Users
+export const getAllOrders = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // Check if the requesting user is an admin
+        const user = await User.findById(req.id);
+        if (!user || !user.admin) {
+            res.status(403).json({ success: false, message: "Not authorized to access all orders" });
+            return;
+        }
+
+        // Fetch all orders with populated data
+        const orders = await Order.find({})
+            .populate('user', 'fullname email contact')
+            .populate('restaurant', 'restaurantName image')
+            .sort({ createdAt: -1 }); // Sort by newest first
+
+        res.status(200).json({ 
+            success: true, 
+            message: "All orders retrieved successfully",
+            orders
+        });
+    } catch (error) {
+        console.error('Error fetching all orders:', error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
 };
