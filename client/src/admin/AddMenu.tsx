@@ -9,16 +9,6 @@ import { MenuFormSchema, menuSchema } from "@/schema/menuSchema";
 import { useMenuStore } from "@/store/useMenuStore";
 import { useRestaurantStore } from "@/store/useRestaurantStore";
 
-const menus = [
-    {
-        title: "Biryani",
-        description: "lorem ipsum",
-        price: 80,
-        image: "https://i0.wp.com/blog.petpooja.com/wp-content/uploads/2021/10/cultural-cuisine.jpg?resize=696%2C385&ssl=1",
-    }
-];
-
-
 const AddMenu = () => {
     const [input, setInput] = useState<MenuFormSchema>({
         name: "",
@@ -164,7 +154,13 @@ const AddMenu = () => {
 
                 </Dialog>
             </div>
-            {
+            {/* Display loading state if restaurant data is not available */}
+            {!restaurant || loading ? (
+                <div className="flex justify-center items-center h-40">
+                    <Loader2 className="h-8 w-8 animate-spin text-orange" />
+                    <span className="ml-2">Loading menu items...</span>
+                </div>
+            ) : restaurant.menus && restaurant.menus.length > 0 ? (
                 restaurant.menus.map((menu: any, idx: number) => (
                     <div key={idx} className="mt-6 space-y-4">
                         <div className="flex flex-col md:flex-row md:items-center md:space-x-4 md:p-4 p-2 shadow-md rounded-lg border">
@@ -195,7 +191,11 @@ const AddMenu = () => {
                         </div>
                     </div>
                 ))
-            }
+            ) : (
+                <div className="mt-6 p-4 text-center bg-gray-50 rounded-lg border border-gray-200">
+                    <p>No menu items found. Add your first menu item using the button above.</p>
+                </div>
+            )}
 
             <EditMenu selectedMenu={selectedMenu}
                 editOpen={editOpen}

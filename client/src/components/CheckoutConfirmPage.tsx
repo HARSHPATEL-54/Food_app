@@ -12,7 +12,6 @@ import { Button } from "./ui/button";
 import { useUserStore } from "@/store/useUserStore";
 import { CheckoutSessionRequest } from "@/types/orderType";
 import { useCartStore } from "@/store/useCartStore";
-import { useRestaurantStore } from "@/store/useRestaurantStore";
 import { useOrderStore } from "@/store/useOrderStore";
 import { Loader2 } from "lucide-react";
 
@@ -33,7 +32,6 @@ const CheckoutConfirmPage = ({
     country: user?.country || "",
   });
   const { cart } = useCartStore();
-  const { restaurant } = useRestaurantStore();
   const { createCheckoutSession, loading } = useOrderStore();
   const changeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,6 +41,21 @@ const CheckoutConfirmPage = ({
     e.preventDefault();
     // api implementation start from here
     try {
+      // Verify we have items in the cart
+      if (!cart.length) {
+        console.error('Error: Cannot checkout with empty cart');
+        return;
+      }
+
+      // Get restaurant ID from the first cart item
+      // All items should be from the same restaurant due to our updated cart logic
+      const restaurantId = cart[0].restaurantId;
+      
+      if (!restaurantId) {
+        console.error('Error: No restaurant ID found in cart items');
+        return;
+      }
+
       const checkoutData: CheckoutSessionRequest = {
         cartItems: cart.map((cartItem) => ({
           menuId: cartItem._id,
@@ -52,11 +65,13 @@ const CheckoutConfirmPage = ({
           quantity: cartItem.quantity.toString(),
         })),
         deliveryDetails: input,
-        restaurantId: restaurant?._id as string,
+        restaurantId: restaurantId,
       };
+      
+      console.log('Sending checkout data:', checkoutData);
       await createCheckoutSession(checkoutData);
     } catch (error) {
-      console.log(error);
+      console.error('Error during checkout:', error);
     }
   };
 
