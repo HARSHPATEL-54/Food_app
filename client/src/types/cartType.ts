@@ -1,7 +1,8 @@
 import { MenuItem } from "./restaurantType";
 
 export interface CartItem extends MenuItem { 
-    quantity:number;
+    quantity: number;
+    restaurantId: string; // Add restaurantId to track which restaurant the item belongs to
 }
 export type CartState = {
     cart:CartItem[];
