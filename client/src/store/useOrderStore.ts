@@ -7,8 +7,8 @@ import { createJSONStorage, persist } from "zustand/middleware";
 // Import useCartStore for clearing the cart
 import { useCartStore } from "./useCartStore";
 
-const API_END_POINT: string = "{import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/v1/order";
-const USER_API_END_POINT = "{import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/v1/user";
+const API_END_POINT: string = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/v1/order`;
+const USER_API_END_POINT = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/v1/user`;
 
 axios.defaults.withCredentials = true;
 
