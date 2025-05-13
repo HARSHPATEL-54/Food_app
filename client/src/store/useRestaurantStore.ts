@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-const API_END_POINT = "{import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/v1/restaurant";
+const API_END_POINT = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/v1/restaurant`;
 axios.defaults.withCredentials = true;
 
 export const useRestaurantStore = create<RestaurantState>()(persist((set ,get) => ({
