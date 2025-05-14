@@ -7,7 +7,7 @@
     "dev": "nodemon --exec ts-node server/index.ts",
     "stripe":"stripe listen --forward-to localhost:8000/api/v1/order/webhook",
     "build":"npm install && npm install --prefix client && npm run build --prefix client",
-    "start":"node dist/index.ts"
+    "start":"node client/index.js"
   },
   "keywords": [],
   "author": "",
