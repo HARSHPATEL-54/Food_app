@@ -4,7 +4,7 @@ import axios from "axios";
 import { LoginInputState, SignupInputState } from "@/schema/userSchema";
 import { toast } from "sonner";
 
-const API_END_POINT = "http://localhost:8000/api/v1/user";
+const API_END_POINT = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/v1/user`;
 axios.defaults.withCredentials = true;
 
 type User = {
@@ -26,6 +26,8 @@ type UserState = {
     loading: boolean;
     signup: (input: SignupInputState) => Promise<void>;
     login: (input: LoginInputState) => Promise<void>;
+    googleLogin: () => void;
+    handleGoogleLoginSuccess: () => void;
     verifyEmail: (verificationCode: string) => Promise<void>;
     checkAuthentication: () => Promise<void>;
     logout: () => Promise<void>;
@@ -73,9 +75,32 @@ export const useUserStore = create<UserState>()(
                         set({ user: response.data.user, isAuthenticated: true });
                     }
                 } catch (error: any) {
-                    toast.error(error.response?.data?.message || "Login failed!");
+                    if (error.response?.data?.isGoogleUser) {
+                        toast.error("This account uses Google Sign-In. Please use the Google login button.");
+                    } else {
+                        toast.error(error.response?.data?.message || "Login failed!");
+                    }
                 } finally {
                     set({ loading: false });
+                }
+            },
+
+            // Google Login - Redirect to Google OAuth
+            googleLogin: () => {
+                // Constructing the correct Google auth URL
+                window.location.href = `${API_END_POINT}/auth/google`;
+            },
+            
+            // Handle Google Login Success
+            handleGoogleLoginSuccess: async () => {
+                try {
+                    const response = await axios.get(`${API_END_POINT}/check-auth`);
+                    if (response.data.success) {
+                        toast.success(`Welcome back ${response.data.user.fullname}`);
+                        set({ user: response.data.user, isAuthenticated: true });
+                    }
+                } catch (error) {
+                    console.error("Error handling Google login success:", error);
                 }
             },
 
@@ -147,7 +172,7 @@ export const useUserStore = create<UserState>()(
             resetPassword: async (token: string, newPassword: string) => {
                 set({ loading: true });
                 try {
-                    const response = await axios.post(`${API_END_POINT}/reset-password`, { token, newPassword });
+                    const response = await axios.post(`${API_END_POINT}/reset-password/${token}`, { newPassword });
                     if (response.data.success) {
                         toast.success(response.data.message);
                     }

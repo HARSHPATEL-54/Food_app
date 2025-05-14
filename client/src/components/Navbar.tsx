@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "./ui/menubar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { HandPlatter, Loader2, Menu, Moon, PackageCheck, ShoppingCart, SquareMenu, Sun, User, UtensilsCrossed } from "lucide-react";
+import { HandPlatter, Loader2, Menu, Moon, PackageCheck, ShoppingCart, SquareMenu, Sun, User, UtensilsCrossed, ClipboardList } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 // import { Input } from "./ui/input";
@@ -26,7 +26,8 @@ const Navbar = () => {
                     <div className="hidden md:flex items-center gap-6">
                         <Link to="/">Home</Link>
                         <Link to="/profile">Profile</Link>
-                        <Link to="/order/status">Order</Link>
+                        <Link to="/order/status">Order Status</Link>
+                        <Link to="/orders">My Orders</Link>
 
                         {
                             user?.admin && (
@@ -111,7 +112,8 @@ export default Navbar;
 
 
 const MobileNavbar = () => {
-    const { user, logout, loading } = useUserStore();
+    const {user, loading, logout } = useUserStore();
+    const {cart} = useCartStore();
     const {setTheme} = useThemeStore();
     return (
       <Sheet>
@@ -155,14 +157,21 @@ const MobileNavbar = () => {
               className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
             >
               <HandPlatter />
-              <span>Order</span>
+              <span>Order Status</span>
+            </Link>
+            <Link
+              to="/orders"
+              className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
+            >
+              <ClipboardList />
+              <span>My Orders</span>
             </Link>
             <Link
               to="/cart"
               className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
             >
               <ShoppingCart />
-              <span>Cart (0)</span>
+              <span>Cart ({cart.length})</span>
             </Link>
             {user?.admin && (
               <>
