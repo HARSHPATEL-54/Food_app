@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MenuFormSchema, menuSchema } from "@/schema/menuSchema";
 import { useMenuStore } from "@/store/useMenuStore";
+import { MenuItem } from "@/types/restaurantType";
 // import { useMenuStore } from "@/store/useMenuStore";
 // import { MenuItem } from "@/types/restaurantType";
 import { Loader2 } from "lucide-react";
@@ -27,7 +28,7 @@ const EditMenu = ({
   editOpen,
   setEditOpen,
 }: {
-  selectedMenu: MenuFormSchema;
+  selectedMenu: MenuItem;
   editOpen: boolean;
   setEditOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
@@ -40,7 +41,7 @@ const EditMenu = ({
   const [error, setError] = useState<Partial<MenuFormSchema>>({});
   //const {loading, editMenu} = useMenuStore();
   // const loading = false;
-  const {loading, editMenu} = useMenuStore();
+  const {loading} = useMenuStore();
   const changeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
     setInput({ ...input, [name]: type === "number" ? Number(value) : value });
@@ -64,7 +65,7 @@ const EditMenu = ({
       if(input.image){
         formData.append("image", input.image);
       }
-      await editMenu(selectedMenu._id, formData);
+      //await editMenu(selectedMenu._id, formData);
     } catch (error) {
       console.log(error);
     }

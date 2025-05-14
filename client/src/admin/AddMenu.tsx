@@ -9,14 +9,14 @@ import { MenuFormSchema, menuSchema } from "@/schema/menuSchema";
 import { useMenuStore } from "@/store/useMenuStore";
 import { useRestaurantStore } from "@/store/useRestaurantStore";
 
-const menus = [
-    {
-        title: "Biryani",
-        description: "lorem ipsum",
-        price: 80,
-        image: "https://i0.wp.com/blog.petpooja.com/wp-content/uploads/2021/10/cultural-cuisine.jpg?resize=696%2C385&ssl=1",
-    }
-];
+// const menus = [
+//     {
+//         title: "Biryani",
+//         description: "lorem ipsum",
+//         price: 80,
+//         image: "https://i0.wp.com/blog.petpooja.com/wp-content/uploads/2021/10/cultural-cuisine.jpg?resize=696%2C385&ssl=1",
+//     }
+// ];
 
 
 const AddMenu = () => {
@@ -165,7 +165,7 @@ const AddMenu = () => {
                 </Dialog>
             </div>
             {
-                restaurant.menus.map((menu: any, idx: number) => (
+                restaurant?.menus.map((menu: any, idx: number) => (
                     <div key={idx} className="mt-6 space-y-4">
                         <div className="flex flex-col md:flex-row md:items-center md:space-x-4 md:p-4 p-2 shadow-md rounded-lg border">
                             <img

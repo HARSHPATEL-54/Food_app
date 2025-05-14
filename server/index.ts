@@ -8,10 +8,14 @@ import orderRoute from "./routes/order.route";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path";
+
 dotenv.config();
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
+const DIRNAME = path.resolve();
 
 // default middleware for any mern project
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -30,10 +34,10 @@ app.use("/api/v1/restaurant", restaurantRoute);
 app.use("/api/v1/menu", menuRoute);
 app.use("/api/v1/order", orderRoute);
 
-// app.use(express.static(path.join(DIRNAME,"/client/dist")));
-// app.use("*",(_,res) => {
-//     res.sendFile(path.resolve(DIRNAME, "client","dist","index.html"));
-// });
+app.use(express.static(path.join(DIRNAME,"/client/dist")));
+app.use("*",(_,res) => {
+    res.sendFile(path.resolve(DIRNAME, "client","dist","index.html"));
+});
 
 app.listen(PORT, () => {
     connectDB();
